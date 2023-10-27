@@ -1,4 +1,3 @@
-
 from type import Type
 
 class CSVFuzz(Type):

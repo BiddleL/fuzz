@@ -1,8 +1,8 @@
 #!/usr/bin/python3
 
 import sys
-from types.csv import CSVFuzz
 
+from types.csv import CSVFuzz
 from types.json import JSONFuzz
 
 if len(sys.arv) != 3:
