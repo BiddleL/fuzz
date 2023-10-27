@@ -16,6 +16,7 @@ class Manager:
         exit_code = p.poll(block = True)
         p.stderr.close()
         p.stdout.close()
+        
 
         return exit_code
     
