@@ -25,6 +25,7 @@ class Manager:
             # No vulnerabilties
             print("No vuln")
         else:
+            
             fp = open("bad_input.txt", "w+")
             fp.write(input)
             fp.close()
