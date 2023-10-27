@@ -2,8 +2,8 @@
 
 import sys
 
-from types.csv import CSVFuzz
-from types.json import JSONFuzz
+from mutators.csv import CSVFuzz
+from mutators.json import JSONFuzz
 
 if len(sys.arv) != 3:
     print("Usage: ./fuzzer program sampleinput.txt")
