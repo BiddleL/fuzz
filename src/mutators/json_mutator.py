@@ -26,7 +26,7 @@ class JSONMutator(MutatorBase):
         Initialise class
         sample_input: sample json input str read in from file, this is converted to json obj
         """
-        super.__init__()
+        super().__init__()
         self._input_json_obj = json.loads(sample_input)
 
     def format_output(self, output):
