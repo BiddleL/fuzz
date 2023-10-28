@@ -11,6 +11,7 @@ def helper_rand_obj(idx, obj_len, key_type):
         elif key_type == "str":
             rand_str_len = randint(0, 50)
             temp_obj[str(i)] = ''.join(choice(string.ascii_uppercase + string.ascii_lowercase + string.digits) for _ in range(rand_str_len))
+    
     rand_key = str(randint(0, obj_len - 1))
     rand_value = json.dumps(temp_obj) * idx
     return rand_key, rand_value
