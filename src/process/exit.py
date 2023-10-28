@@ -33,4 +33,3 @@ class ExitCodes(enum.Enum):
     SIGPWR = 30
     SIGSYS = 31
 
-

@@ -4,8 +4,13 @@ from pwn import process
 class Manager:
     
     def __init__(self, count):
-        self.process_name = f"./{sys.argv[1]}"
-        self.stop_flag
+        if "./"  != sys.argv[1][1:2]:
+            self.process_name = f"./{sys.argv[1]}"
+        else:
+            self.process_name = f"./{sys.argv[1]}"
+        self.stop_flag = False
+
+    def in
  
     
     def run(self, inputStr):
