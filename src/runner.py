@@ -70,7 +70,6 @@ class Manager:
         outs, err = self._process.communicate(input_bytes, timeout=0.5)
         return outs, err, self._process.returncode
     
-
     def run(self):
         self._txt_name = self._process_name.split('/')[-1].split('.')[0]
         for idx, (input_bytes, name) in enumerate(self._fuzz, 1):
