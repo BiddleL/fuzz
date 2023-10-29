@@ -4,7 +4,7 @@ import random
 import pwnlib.util.fiddling as bits
 
 
-class CsvMutator(MutatorBase):
+class CSV(MutatorBase):
     """
     Fuzzer generates inputs by mutating seeds using a generator pattern.
 

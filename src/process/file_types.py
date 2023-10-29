@@ -2,7 +2,7 @@ import csv
 from io import BytesIO
 import json
 
-def csv_checker(input_raw: bytes):
+def isCSV(input_raw: bytes) -> bool:
     """
     Determine if the given bytes represent a valid CSV format with
     at least two columns and more than one line.
@@ -26,7 +26,7 @@ def csv_checker(input_raw: bytes):
     return True
 
 
-def json_checker(input_raw: bytes):
+def isJSON(input_raw: bytes) -> bool:
     """
     Determine if the given bytes represent a valid JSON format 
     which is either a list or an object.
@@ -47,8 +47,8 @@ def whichType(input):
     """
     
     def checkers():
-        yield ("csv", csv_checker)
-        yield ("json", json_checker)
+        yield ("csv", isCSV)
+        yield ("json", isJSON)
         # for later implementation
         # yield ("jpeg", jepg_checker)
         # yield ("xml", xml_checker)
