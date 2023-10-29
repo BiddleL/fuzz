@@ -71,23 +71,15 @@ class JSON_Mutator(MutatorBase):
         Mutates random bits in the sample input and returns mutated bits
         """
         json_str = json.dumps(self._input_json_obj)
-<<<<<<< HEAD
 
         random_factor = 10
 
-=======
-        random_factor = 30
->>>>>>> 678adae (add a working harness, did a little improvements on JSONMutator)
         for i in range(500):
             json_byte_array = bytearray(json_str, "UTF-8")
             for j in range(len(json_byte_array)):
                 rand_n = randint(0, random_factor)
                 if rand_n == 0:
-<<<<<<< HEAD
                     json_byte_array[j] ^= randint(0, 200)
 
-=======
-                    json_byte_array[j] ^= randint(0, 127)
->>>>>>> 678adae (add a working harness, did a little improvements on JSONMutator)
         
         return json_byte_array
