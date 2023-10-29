@@ -33,6 +33,7 @@ class Manager:
 
         self._file_type = process.whichType(self._input_file)
         self._fuzz = self._MUTATORS[self._file_type](self._input_file)
+        self._process = self._init_process()
 
     @staticmethod
     def _read_file(file_path: str) -> bytes:
@@ -66,8 +67,8 @@ class Manager:
     
     def _process_input(self, input_bytes: bytes) -> Tuple[bytes, bytes, int]:
         """Send input to the binary process and return output, error, and exit code."""
-        outs, err = self._binary_process.communicate(input_bytes, timeout=0.5)
-        return outs, err, self._binary_process.returncode
+        outs, err = self._process.communicate(input_bytes, timeout=0.5)
+        return outs, err, self._process.returncode
     
 
     def run(self):
