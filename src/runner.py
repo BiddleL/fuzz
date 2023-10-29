@@ -33,7 +33,7 @@ class Manager:
 
         self._file_type = process.whichType(self._input_file)
         self._fuzz = self._MUTATORS[self._file_type](self._input_file)
-        self._process = self._init_process()
+        self._init_process()
 
     @staticmethod
     def _read_file(file_path: str) -> bytes:
