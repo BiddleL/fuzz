@@ -16,7 +16,7 @@ def helper_rand_obj(idx, obj_len, key_type):
     rand_value = json.dumps(temp_obj) * idx
     return rand_key, rand_value
 
-class JSONMutator(MutatorBase):
+class JSON_Mutator(MutatorBase):
     """
     Mutator that uses a provided sample JSON input to create and return altered inputs
     """
