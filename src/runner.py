@@ -65,7 +65,7 @@ class Manager:
     
     def run(self):
         self._txt_name = self._process_name.split('/')[-1].split('.')[0]
-        for idx, (input_bytes, name) in enumerate(self._fuzzer, 1):
+        for idx, (input_bytes, name) in enumerate(self._fuzz, 1):
             if idx > self._num_runs:
                 break
             try:
