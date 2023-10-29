@@ -91,8 +91,7 @@ class Manager:
                 if exitcode < 0:  # Handle SIGFAULT
                     print(f"Program Crashed: exitcode = {exitcode}")
                     print(f"\tReason: {process.ExitCodes(-exitcode).name}")
-                    print(f"Dumped badinput to {self._txt_name}_dump.txt")
-
+                    print(f"Dumped bad input report to {self._txt_name}_dump.txt")
                     self._result_dump(input_bytes)
                     break
             except subprocess.TimeoutExpired:
