@@ -2,13 +2,14 @@ import subprocess
 import sys
 
 import mutators
-import process
+from exit import ExitCodes
+from file_types import whichType
 
 class Manager:
 
     _MUTATORS = {
-        "csv" : mutators.CSVMutator,
-        "json" : mutators.JSONMutator
+        "csv" : mutators.CSV_Mutator,
+        "json" : mutators.JSON_Mutator
     }
     
     def __init__(self, binary, seed, times: int = 5000):
@@ -31,7 +32,7 @@ class Manager:
             sys.exit()
 
 
-        self._file_type = file_types.whichType(self.inputStr)
+        self._file_type = whichType(self.inputStr)
         self._fuzz = self.MUTATORS[self.type](self._inputStr)
 
     def _init_process(self):
