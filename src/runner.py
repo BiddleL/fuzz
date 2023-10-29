@@ -2,8 +2,6 @@ import subprocess
 import sys
 from typing import Tuple, Iterator
 
-import pwn
-
 import mutators
 import process
 
