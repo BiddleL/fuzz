@@ -1,5 +1,6 @@
 from .mutator_base import MutatorBase
-from random import randint, choice 
+from random import randint, choice
+
 import json
 import string
 
@@ -70,12 +71,15 @@ class JSON_Mutator(MutatorBase):
         Mutates random bits in the sample input and returns mutated bits
         """
         json_str = json.dumps(self._input_json_obj)
-        random_factor = 30
+
+        random_factor = 10
+
         for i in range(500):
             json_byte_array = bytearray(json_str, "UTF-8")
             for j in range(len(json_byte_array)):
                 rand_n = randint(0, random_factor)
                 if rand_n == 0:
-                    json_byte_array[j] ^= randint(0, 127)
+                    json_byte_array[j] ^= randint(0, 200)
+
         
         return json_byte_array
