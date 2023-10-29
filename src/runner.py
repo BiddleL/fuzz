@@ -26,7 +26,8 @@ class Manager:
         self._stop_flag = False
         
         try:
-            self._input_file = self._read_file(seed)
+            self._inputFile = open(seed, 'r')
+            self._inputStr = self._inputFile.read().strip()
 
         except OSError:
             print(f"Couldn't open input file: {seed}")
