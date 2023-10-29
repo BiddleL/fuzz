@@ -30,8 +30,8 @@ class Manager:
             sys.exit()
 
 
-        self._file_type = process.whichType(self._inputStr)
-        self._fuzz = self.MUTATORS[self.type](self._inputStr)
+        self._file_type = process.whichType(self._input_file)
+        self._fuzz = self.MUTATORS[self.type](self._input_file)
 
     @staticmethod
     def _read_file(file_path: str) -> bytes:
