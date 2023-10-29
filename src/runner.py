@@ -27,11 +27,11 @@ class Manager:
             self._inputStr = self._inputFile.read().strip()
 
         except OSError:
-            print(f"Couldn't open input file: {self.inputFile}")
+            print(f"Couldn't open input file: {self._inputFile}")
             sys.exit()
 
 
-        self._file_type = process.whichType(self.inputStr)
+        self._file_type = process.whichType(self._inputStr)
         self._fuzz = self.MUTATORS[self.type](self._inputStr)
 
     def _init_process(self):
