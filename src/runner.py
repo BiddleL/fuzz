@@ -43,7 +43,7 @@ class Manager:
 
     def _init_process(self):
         self._process = subprocess.Popen(
-            self._binary_path,
+            self._process_name,
             stdin=subprocess.PIPE,
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE
