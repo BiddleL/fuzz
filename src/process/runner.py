@@ -2,7 +2,7 @@ import subprocess
 import sys
 
 import mutators
-from process import file_types, ExitCodes
+import process
 
 class Manager:
 
