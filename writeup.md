@@ -7,7 +7,7 @@ In the event of a crash the input, fault type and method of crash are recorded. 
 
 So far there are format specific mutations for CSV and JSON.
 The CSV specific mutations include: inserting multiple rows in order to overflow, and replacing null bytes with non null bytes.
-The JSON specifc mutations include: bit flips
+The JSON specifc mutations include: bit flips, JSON inputs of variable sizes and types
 
 
 What improvements can be made to your fuzzer?
