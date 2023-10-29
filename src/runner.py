@@ -23,16 +23,21 @@ class Manager:
         self._stop_flag = False
         
         try:
-            self._inputFile = open(seed, 'r')
-            self._inputStr = self._inputFile.read().strip()
+            self._input_file = self._read_file(seed)
 
         except OSError:
-            print(f"Couldn't open input file: {self._inputFile}")
+            print(f"Couldn't open input file: {seed}")
             sys.exit()
 
 
         self._file_type = process.whichType(self._inputStr)
         self._fuzz = self.MUTATORS[self.type](self._inputStr)
+
+    @staticmethod
+    def _read_file(file_path: str) -> bytes:
+        """Read and return content of a file."""
+        with open(file_path, 'rb') as f:
+            return f.read()
 
     def _init_process(self):
         self._process = subprocess.Popen(
