@@ -18,11 +18,8 @@ class Manager:
         self._num_runs = times
         self._current_checkpoint = 0
         
-        if "./"  != binary[1:2]:
-            self._process_name = f"./{binary}"
-        else:
-            self._process_name = f"{binary}"
-        
+        self._process_name = self._format_binary_path(binary)
+
         self._stop_flag = False
         
         try:
@@ -36,7 +33,6 @@ class Manager:
         self._file_type = process.whichType(self._input_file)
         self._fuzz = self._MUTATORS[self._file_type](self._input_file)
         self._init_process()
-
 
     def _format_binary_path(self, binary: str) -> str:
         """Ensure the binary path is correctly formatted."""
