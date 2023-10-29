@@ -26,8 +26,7 @@ class Manager:
         self._stop_flag = False
         
         try:
-            self._inputFile = open(seed, 'r')
-            self._inputStr = self._inputFile.read().strip()
+            self._input_file = self._read_file(seed)
 
         except OSError:
             print(f"Couldn't open input file: {seed}")
@@ -42,6 +41,12 @@ class Manager:
     def _format_binary_path(self, binary: str) -> str:
         """Ensure the binary path is correctly formatted."""
         return binary if '/' in binary else f'./{binary}'
+
+    @staticmethod
+    def _read_file(file_path: str) -> bytes:
+        """Read and return content of a file."""
+        with open(file_path, 'rb') as f:
+            return f.read()
 
     @staticmethod
     def _read_file(file_path: str) -> bytes:
