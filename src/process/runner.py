@@ -1,6 +1,5 @@
 import subprocess
 import sys
-from pwn import process
 
 import mutators
 from process import file_types, ExitCodes
