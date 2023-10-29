@@ -2,8 +2,7 @@ import subprocess
 import sys
 
 import mutators
-from exit import ExitCodes
-from file_types import whichType
+import process
 
 class Manager:
 
@@ -32,7 +31,7 @@ class Manager:
             sys.exit()
 
 
-        self._file_type = whichType(self.inputStr)
+        self._file_type = process.whichType(self.inputStr)
         self._fuzz = self.MUTATORS[self.type](self._inputStr)
 
     def _init_process(self):
@@ -70,7 +69,7 @@ class Manager:
 
                 if exitcode < 0:  # Handle SIGFAULT
                     print(f"Program Crashed: exitcode = {exitcode}")
-                    print(f"\tReason: {ExitCodes.name[-exitcode]}")
+                    print(f"\tReason: {process.ExitCodes.name[-exitcode]}")
                     print(f"Dumped badinput to {self._txt_name}_dump.txt")
                     self._result_dump(input_bytes)
             except subprocess.TimeoutExpired:
