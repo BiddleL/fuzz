@@ -61,7 +61,7 @@ class Manager:
         print("=" * 50)
 
     def _result_dump(self, input):
-        with open(f"{self._txt_name}_dump.txt", "w+") as fp:
+        with open(f"{self._txt_name}_dump.txt", "wb") as fp:
             fp.write(input)
             fp.close()
     
