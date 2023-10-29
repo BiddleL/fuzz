@@ -24,7 +24,7 @@ class Manager:
         
         try:
             self._inputFile = open(seed, 'r')
-            self._inputStr = self.inputFile.read().strip()
+            self._inputStr = self._inputFile.read().strip()
 
         except OSError:
             print(f"Couldn't open input file: {self.inputFile}")
