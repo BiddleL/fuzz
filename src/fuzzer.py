@@ -12,7 +12,7 @@ def main(binary, seed, times: int = 5000):
     runner.run() 
     
 if __name__ == "__main__":
-    if len(sys.arv) != 3:
+    if len(sys.argv) != 3:
         print("Usage: ./fuzzer program sampleinput.txt")
         sys.exit()
 
