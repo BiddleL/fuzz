@@ -2,7 +2,7 @@
 
 from argparse import ArgumentParser
 import sys
-from process import Manager
+from runner import Manager
 
 def main(binary, seed, times: int = 5000):
     """
