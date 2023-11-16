@@ -84,6 +84,7 @@ class Manager:
                     print(f"\tReason: {process.ExitCodes(-exitcode).name}")
                     print(f"Dumped badinput to {self._txt_name}_dump.txt")
                     self._result_dump(input_bytes)
+                    break
             except subprocess.TimeoutExpired:
                 print(f"{idx}: Timeout")
                 print(f"Dumped timeout report to {self._txt_name}_dump.txt")
