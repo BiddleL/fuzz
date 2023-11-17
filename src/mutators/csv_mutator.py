@@ -1,8 +1,6 @@
 from copy import deepcopy
 from .mutator_base import MutatorBase
 import random
-import pwnlib.util.fiddling as bits
-
 
 class CSV_Mutator(MutatorBase):
     """

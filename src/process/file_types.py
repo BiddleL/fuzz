@@ -1,6 +1,7 @@
 import csv
 from io import BytesIO
 import json
+import xml.etree.ElementTree as ET
 
 def isCSV(input_raw: bytes) -> bool:
     """
@@ -40,6 +41,22 @@ def isJSON(input_raw: bytes) -> bool:
         return False
 
 # other matchers jpeg, xml, elf, pdf...
+def isXML(input_raw: bytes) -> bool:
+    """
+    Check if the given bytes represent an XML file.
+
+    :param data: bytes to check.
+    :return: True if data is an XML file, False otherwise.
+    """
+    try:
+        ET.fromstring(input_raw)
+        return True
+    except ET.ParseError:
+        return False
+    except Exception as e:
+        # Handle other potential exceptions, e.g., encoding issues
+        print(f"An error occurred: {e}")
+        return False
 
 def whichType(input):
     """
@@ -51,7 +68,7 @@ def whichType(input):
         yield ("json", isJSON)
         # for later implementation
         # yield ("jpeg", jepg_checker)
-        # yield ("xml", xml_checker)
+        yield ("xml", isXML)
         # yield ("elf", elf_checker)
         # yield ("pdf", pdf_checker)
         
