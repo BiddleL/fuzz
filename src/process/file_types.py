@@ -39,6 +39,11 @@ def isJSON(input_raw: bytes) -> bool:
     except json.JSONDecodeError:
         return False
 
+
+def isPDF(input_raw: bytes) -> bool:
+    if input_raw.startswith("255044462d"):
+        return True
+    return False    
 # other matchers jpeg, xml, elf, pdf...
 
 def whichType(input):
@@ -53,7 +58,7 @@ def whichType(input):
         # yield ("jpeg", jepg_checker)
         # yield ("xml", xml_checker)
         # yield ("elf", elf_checker)
-        # yield ("pdf", pdf_checker)
+        yield ("pdf", isPDF)
         
     # default value set to 'plaintext' because all seeds end with '.txt'
     return next((filetype for filetype, matcher in checkers() if matcher(input)), 'plaintext')
