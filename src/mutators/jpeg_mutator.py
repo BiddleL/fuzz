@@ -169,25 +169,6 @@ class JPEG_Mutator(MutatorBase):
         return self._format()
         self.q_table.append(qt)
 
-    def _mutate_qt_change(self):
-        """
-        This function mutates the input file by changing a random quantization table
-        with random bytes
-    
-        Args:
-            None
-
-        Returns:
-            None
-        """
-
-        tdx = random.randint(0, len(self._q_table) - 1)
-        rdx = random.randint(0, 7)
-        cdx = random.randint(0, 7)
-
-        row = self._q_table[tdx]['table'][rdx]
-        self._q_table[tdx]['table'][rdx] = row[:cdx] + random.randbytes(1) + row[cdx + 1:]
-
     def _mutate_qt_random(self):
         """
         This function mutates the input file by changing a quantization table
@@ -308,7 +289,7 @@ class JPEG_Mutator(MutatorBase):
                 content = head[high + 2:high + 2 + length]
             
             if re.match(self.Markers["SOF"], field):
-                self._sof_info = self.parse_sof(content, field[1])
+                self._sof_info = self._parse_sof(content, field[1])
             elif re.match(self.Markers["APP"], field):
                 index = int.from_bytes(field, 'big') - 0xffe0
                 self._app_meta[index] = content
@@ -583,9 +564,9 @@ class JPEG_Mutator(MutatorBase):
             
             sos += comp
 
-        sos += self._sos_info['spectral_select'][0].to_bytes(1, 'big')
-        sos += self._sos_info['spectral_select'][1].to_bytes(1, 'big')
-        sos += self._sos_info['successive_approx'].to_bytes(1, 'big')
-        length = random.randint(0, 0xFF)
+        content += self._sos_info['spectral_select'][0].to_bytes(1, 'big')
+        content += self._sos_info['spectral_select'][1].to_bytes(1, 'big')
+        content += self._sos_info['successive_approx'].to_bytes(1, 'big')
+        length = len(content) + 2
 
         return self.Markers["SOS"] + length.to_bytes(2, 'big') + sos

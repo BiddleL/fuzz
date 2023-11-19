@@ -25,6 +25,7 @@ def isCSV(input_raw: bytes) -> bool:
     except:  
         return False
 
+
     return True
 
 def isJSON(input_raw: bytes) -> bool:
