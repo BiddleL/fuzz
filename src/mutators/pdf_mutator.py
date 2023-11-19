@@ -62,7 +62,6 @@ class PDF_Mutator(MutatorBase):
         """
         Inserts random bytes into PDF
         """
-        i = 100
-        for i in 100:
+        for i in range(100):
             mutated_content = self._insert_multiple_bytes(mutated_content, i)
         return mutated_content
