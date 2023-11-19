@@ -10,7 +10,7 @@
 As per the requirements of the project, our fuzzer is provided with a binary and a text file that contains a sample input. It then uses this to determine the file type, which is necessary in deciding the type of mutator that will be needed by the fuzzer to generate the inputs. Following this, the generated inputs are used by the fuzzer against the binary for a predetermined loop, which breaks upon discovering a crash. The input, fault type and method of crash are recorded by the harness, and outputted. A simple diagram is shown below to give a high level overview of this:
 <pre>
 <b>BINARY</b> |
-       | ---------> <b>FILE TYPE CHEKCER</b>
+       | ---------> <b>FILE TYPE CHECKER</b>
 <b>INPUT</b>  |                   |         
                    Determine File Type
                            |             
