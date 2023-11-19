@@ -41,7 +41,7 @@ def isJSON(input_raw: bytes) -> bool:
 
 
 def isPDF(input_raw: bytes) -> bool:
-    if input_raw.startswith("255044462d"):
+    if input_raw.startswith("25504446"):
         return True
     return False    
 # other matchers jpeg, xml, elf, pdf...
