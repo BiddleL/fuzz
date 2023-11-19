@@ -11,7 +11,8 @@ class Manager:
         "csv" : mutators.CSV_Mutator,
         "json" : mutators.JSON_Mutator,
         "plaintext": mutators.PLAINTEXT_Mutator,
-        "xml": mutators.XML_Mutator
+        "xml": mutators.XML_Mutator,
+        "pdf" : mutators.PDF_Mutator
     }
     
     def __init__(self, binary, seed, times: int = 5000):
