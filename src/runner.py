@@ -12,6 +12,7 @@ class Manager:
         "json" : mutators.JSON_Mutator,
         "plaintext": mutators.PLAINTEXT_Mutator,
         "xml": mutators.XML_Mutator,
+        "jpeg" : mutators.JPEG_Mutator,
         "pdf" : mutators.PDF_Mutator
     }
     
@@ -19,11 +20,8 @@ class Manager:
         self._num_runs = times
         self._current_checkpoint = 0
         
-        if "./"  != binary[1:2]:
-            self._process_name = f"./{binary}"
-        else:
-            self._process_name = f"{binary}"
-        
+        self._process_name = self._format_binary_path(binary)
+
         self._stop_flag = False
         
         try:
@@ -38,10 +36,15 @@ class Manager:
         self._fuzz = self._MUTATORS[self._file_type](self._input_file)
         self._init_process()
 
-
     def _format_binary_path(self, binary: str) -> str:
         """Ensure the binary path is correctly formatted."""
         return binary if '/' in binary else f'./{binary}'
+
+    @staticmethod
+    def _read_file(file_path: str) -> bytes:
+        """Read and return content of a file."""
+        with open(file_path, 'rb') as f:
+            return f.read()
 
     @staticmethod
     def _read_file(file_path: str) -> bytes:
@@ -90,9 +93,7 @@ class Manager:
                 if exitcode < 0:  # Handle SIGFAULT
                     print(f"Program Crashed: exitcode = {exitcode}")
                     print(f"\tReason: {process.ExitCodes(-exitcode).name}")
-
-                    print(f"Dumped badinput to {self._txt_name}_dump.txt")
-
+                    print(f"Dumped bad input report to {self._txt_name}_dump.txt")
                     self._result_dump(input_bytes)
                     break
             except subprocess.TimeoutExpired:

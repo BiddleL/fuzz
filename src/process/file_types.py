@@ -11,9 +11,9 @@ def isCSV(input_raw: bytes) -> bool:
     """
     
     sample_file = BytesIO(input_raw)
-    reader = csv.reader(sample_file.read().decode().splitlines())
 
     try:
+        reader = csv.reader(sample_file.read().decode().splitlines())
         header = next(reader)
         if len(header) < 2:
             return False
@@ -22,11 +22,11 @@ def isCSV(input_raw: bytes) -> bool:
         if len(next_line) != len(header): 
             return False
 
-    except StopIteration:  
+    except:  
         return False
 
-    return True
 
+    return True
 
 def isJSON(input_raw: bytes) -> bool:
     """
@@ -38,7 +38,7 @@ def isJSON(input_raw: bytes) -> bool:
         # Attempt to decode the bytes into a Python object
         parsed = json.loads(input_raw)
         return isinstance(parsed, (list, dict))
-    except json.JSONDecodeError:
+    except:
         return False
 
 
@@ -46,7 +46,19 @@ def isPDF(input_raw: bytes) -> bool:
     if input_raw.startswith("25504446"):
         return True
     return False    
-# other matchers jpeg, xml, elf, pdf...
+
+
+def isJPEG(input_raw: bytes) -> bool:
+    """
+    Determines if the given  bytes represents a valid JPEG file
+    """
+    SOI = b'\xff\xd8'
+    EOI = b'\xff\xd9'
+    if input_raw.startswith(SOI) and input_raw.endswith(EOI):
+        return True
+    
+    return False
+
 
 def isXML(input_raw: bytes) -> bool:
     """
@@ -75,9 +87,9 @@ def whichType(input):
         yield ("csv", isCSV)
         yield ("json", isJSON)
         # for later implementation
-        # yield ("jpeg", jepg_checker)
         yield ("xml", isXML)
-
+        yield ("jpeg", isJPEG)
+        # yield ("xml", xml_checker)
         # yield ("elf", elf_checker)
         yield ("pdf", isPDF)
         
