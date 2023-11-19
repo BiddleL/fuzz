@@ -83,25 +83,6 @@ class JPEG_Mutator(MutatorBase):
         qt['table'] = [random.randbytes(8) for _ in range(8)]
         self.q_table.append(qt)
 
-    def _mutate_qt_change(self):
-        """
-        This function mutates the input file by changing a random quantization table
-        with random bytes
-    
-        Args:
-            None
-
-        Returns:
-            None
-        """
-
-        tdx = random.randint(0, len(self._q_table) - 1)
-        rdx = random.randint(0, 7)
-        cdx = random.randint(0, 7)
-
-        row = self._q_table[tdx]['table'][rdx]
-        self._q_table[tdx]['table'][rdx] = row[:cdx] + random.randbytes(1) + row[cdx + 1:]
-
     def _mutate_qt_random(self):
         """
         This function mutates the input file by changing a quantization table
@@ -204,7 +185,7 @@ class JPEG_Mutator(MutatorBase):
                 content = head[high + 2:high + 2 + length]
             
             if re.match(self.Markers["SOF"], field):
-                self._sof_info = self.parse_sof(content, field[1])
+                self._sof_info = self._parse_sof(content, field[1])
             elif re.match(self.Markers["APP"], field):
                 index = int.from_bytes(field, 'big') - 0xffe0
                 self._app_meta[index] = content
@@ -222,9 +203,8 @@ class JPEG_Mutator(MutatorBase):
             elif field == self.Markers["COM"]:
                 self._comments.append(content)
 
-
-            self._sos_info = self._parse_sos(body[2:2 + 10])
-            self._body = body[2 + 10:-2]
+        self._sos_info = self._parse_sos(body[2:2 + 10])
+        self._body = body[2 + 10:-2]
 
     def _parse_sof(self, content: bytes, type: bytes) -> dict:
         """
@@ -242,6 +222,21 @@ class JPEG_Mutator(MutatorBase):
         info["precision"] = content[0]
         info['n_components'] = content[5]
         info['type'] = type
+        info["components"] = self._parse_sof_components(content)
+        info['height'] = int.from_bytes(content[1:3], 'big')
+        info['width'] = int.from_bytes(content[3:5], 'big')
+        
+    def _parse_sof_components(self, content: bytes) -> list:
+        """
+        Parses a content of frame's components from a JPEG file into the class' structure
+
+        Args:
+            content (bytes): Raw bytes of frame of a JPEG file
+
+        Returns:
+            list: list contains info on the frame's components
+        """
+        
         components = list()
         colour = content[6:]
         for i in range(content[5]):
@@ -253,10 +248,9 @@ class JPEG_Mutator(MutatorBase):
             ]
             component['dqt_index'] = colour[2 + 3 * i]
             components.append(component)
-        info["components"] = components
-        info['height'] = int.from_bytes(content[1:3], 'big')
-        info['width'] = int.from_bytes(content[3:5], 'big')
-        
+
+        return components
+    
     def _parse_hf(self, content: bytes) -> dict:
         """
         Parses a content of huffman table from a JPEG file into the class' structure
@@ -277,14 +271,52 @@ class JPEG_Mutator(MutatorBase):
         lo, hi = 0, 0
         for idx in size:
             if idx == 0:
-                encodings.append(b'')
+                encode.append(b'')
             else:
                 hi += idx
-                encodings.append(encodings[lo:hi])
+                encode.append(encodings[lo:hi])
                 lo = hi
         hf["encodings"] = encodings
         return hf
     
+    def _parse_sos(self, content: bytes) -> dict:
+        """
+        Parses a content of scan from a JPEG file into the class' structure
+
+        Args:
+            content (bytes): Raw bytes of scan of a JPEG file
+
+        Returns:
+            dict: structure contains info on the JPEG's scan
+        """
+        sos = dict()
+        sos['n_components'] = content[0]
+        sos['components'] = self._parse_sos_components(content)
+        sos['spectral_select'] = [content[-3], content[-2]]
+        sos['successive_approx'] = content[-1]
+        return sos
+
+    def _parse_sos_components(self, content: bytes) -> list:
+        """
+        Parses a content of scan's components from a JPEG file into the class' structure
+
+        Args:
+            content (bytes): Raw bytes of scan of a JPEG file
+
+        Returns:
+            list: list contains info on the scan's components
+        """
+        
+        components = list()
+        for i in range(content[0]):
+            component = dict()
+            component['id'] = content[1 + i * 2]
+            component['dc'] = content[1 + i * 2 + 1] >> 4
+            component['ac'] = content[1 + i * 2 + 1] & 0x0f
+            components.append(component)
+        
+        return components
+ 
     def _asm_app(self) -> bytes:
         """
         Assembles class structure's application metadata
@@ -420,10 +452,10 @@ class JPEG_Mutator(MutatorBase):
             
             sos += comp
 
-        res += self._sos_info['spectral_select'][0].to_bytes(1, 'big')
-        res += self._sos_info['spectral_select'][1].to_bytes(1, 'big')
-        res += self._sos_info['successive_approx'].to_bytes(1, 'big')
-        length = len(res) + 2
+        content += self._sos_info['spectral_select'][0].to_bytes(1, 'big')
+        content += self._sos_info['spectral_select'][1].to_bytes(1, 'big')
+        content += self._sos_info['successive_approx'].to_bytes(1, 'big')
+        length = len(content) + 2
 
         return self.Markers["SOS"] + length.to_bytes(2, 'big') + sos
 

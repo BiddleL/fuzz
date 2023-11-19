@@ -11,9 +11,9 @@ def isCSV(input_raw: bytes) -> bool:
     """
     
     sample_file = BytesIO(input_raw)
-    reader = csv.reader(sample_file.read().decode().splitlines())
 
     try:
+        reader = csv.reader(sample_file.read().decode().splitlines())
         header = next(reader)
         if len(header) < 2:
             return False
@@ -22,8 +22,9 @@ def isCSV(input_raw: bytes) -> bool:
         if len(next_line) != len(header): 
             return False
 
-    except StopIteration:  
+    except:  
         return False
+
 
     return True
 
@@ -37,7 +38,7 @@ def isJSON(input_raw: bytes) -> bool:
         # Attempt to decode the bytes into a Python object
         parsed = json.loads(input_raw)
         return isinstance(parsed, (list, dict))
-    except json.JSONDecodeError:
+    except:
         return False
 
 def isJPEG(input_raw: bytes) -> bool:
