@@ -88,6 +88,24 @@ class JPEG_Mutator(MutatorBase):
         ret =  self.Markers["SOI"] + head + self._body + self.Markers["EOI"]
         return ret
 
+    def _mutate_length(self):
+        new = self._seed
+        idx = [b'x\ff\xc0',b'x\ff\xc1', b'x\ff\xc2', b'x\ff\xc3', b'x\ff\xc4', b'x\ff\xc5', b'x\ff\xc6', b'x\ff\xc7', b'x\ff\xc8']
+        for i, _ in enumerate(self._sof_info["components"]):
+            try:
+                help = idx[i]
+            except:
+                help = idx[1]
+            index = new.find(help)
+            new = new[:index] + random.randbytes(2) + new[index - 2:]
+        return new
+
+    def _mutate_help(self):
+        new = self._seed
+        index = new.find(b'\xff\xda')
+        new = new[:index] + random.randbytes(2) + new[index - 2:]
+        return new
+
     def _mutate_swap_markers(self):
         markers = list(self.Markers.values())
         swapped = markers[random.randrange(0, len(self.Markers))]
