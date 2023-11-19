@@ -80,9 +80,9 @@ def whichType(input):
         yield ("csv", isCSV)
         yield ("json", isJSON)
         # for later implementation
-        # yield ("jpeg", jepg_checker)
         yield ("xml", isXML)
-
+        yield ("jpeg", isJPEG)
+        # yield ("xml", xml_checker)
         # yield ("elf", elf_checker)
         # yield ("pdf", pdf_checker)
         
