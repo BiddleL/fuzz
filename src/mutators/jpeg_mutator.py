@@ -38,6 +38,7 @@ class JPEG_Mutator(MutatorBase):
         self._marker = list()
         self._comments = list()
         self._app_meta = dict()
+        self._sos_info = dict()
         self.frame = dict()
         self.scan = dict()
         self._parse(seed)
