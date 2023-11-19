@@ -556,7 +556,7 @@ class JPEG_Mutator(MutatorBase):
         sos = bytes()
         sos += self._sos_info['n_components'].to_bytes(1, 'big')
 
-        for idx in range(self._sos_info['n_components']):
+        for idx, _ in enumerate(self._sos_info['components']):
             component = self._sos_info['components'][idx]
             comp = bytes()
             comp += component['id'].to_bytes(1, 'big')
