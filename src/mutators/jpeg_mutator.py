@@ -35,6 +35,7 @@ class JPEG_Mutator(MutatorBase):
         "ELF" : b"\x7f\x45\x4c\x46",                                                     
     }
 
+
     def __init__(self, seed: bytes):
         """
         Initalises the class
@@ -56,6 +57,8 @@ class JPEG_Mutator(MutatorBase):
         self.frame = dict()
         self.scan = dict()
         self._parse(seed)
+        print(self._sof_info)
+
  
 
 
@@ -85,11 +88,6 @@ class JPEG_Mutator(MutatorBase):
         
         ret =  self.Markers["SOI"] + head + self._body + self.Markers["EOI"]
         return ret
-
-    def _mutate_help(self):
-        index = self._seed.find(b'\xff\xc4')
-        
-        return self._seed[:index] + b'\xff\xc0\x00\x11\x08\x01\xd6\x01\x84' + b'\x03' + b'\xde\x23' + self._seed[index + 12:]
 
     def _mutate_swap_markers(self):
         markers = list(self.Markers.values())
@@ -249,6 +247,20 @@ class JPEG_Mutator(MutatorBase):
         for bdx, _ in enumerate(data):
             new_body.append(data[d_length - bdx -1])
         self._body = bits.unbits(new_body)
+        return self._format()
+
+    def _mutate_sos(self) -> bytes:
+        self._sos_info['n_components'] = random.randint(0, 0xFF -1)
+
+        for i in self._sos_info['components']:
+            i['id'] = random.randint(0, 0xF -1)
+            i['dc'] = random.randint(0, 0xF -1)
+            i['ac'] = random.randint(0, 0xF -1)
+            
+        self._sos_info['spectral_select'][0] = random.randint(0, 0xFF -1)
+        self._sos_info['spectral_select'][1] = random.randint(0, 0xFF -1)
+        self._sos_info['successive_approx'] = random.randint(0, 0xFF -1)
+        
         return self._format()
 
     def _parse(self, sample: bytes):
@@ -544,7 +556,7 @@ class JPEG_Mutator(MutatorBase):
         sos = bytes()
         sos += self._sos_info['n_components'].to_bytes(1, 'big')
 
-        for idx in range(self._sos_info['n_components']):
+        for idx, _ in enumerate(self._sos_info['components']):
             component = self._sos_info['components'][idx]
             comp = bytes()
             comp += component['id'].to_bytes(1, 'big')
@@ -555,6 +567,6 @@ class JPEG_Mutator(MutatorBase):
         sos += self._sos_info['spectral_select'][0].to_bytes(1, 'big')
         sos += self._sos_info['spectral_select'][1].to_bytes(1, 'big')
         sos += self._sos_info['successive_approx'].to_bytes(1, 'big')
-        length = len(sos) + 2
+        length = random.randint(0, 0xFF)
 
         return self.Markers["SOS"] + length.to_bytes(2, 'big') + sos
