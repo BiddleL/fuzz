@@ -2,7 +2,7 @@
 ## Group Members
 - Daniel Blazevski
 - Liam Biddle (z5311885)
-- Ziqi Guo
+- Ziqi Guo (z5179887)
 - Shafi Rafiq (z5258434)
 
 # How does the Fuzzer Work?
