@@ -564,9 +564,9 @@ class JPEG_Mutator(MutatorBase):
             
             sos += comp
 
-        content += self._sos_info['spectral_select'][0].to_bytes(1, 'big')
-        content += self._sos_info['spectral_select'][1].to_bytes(1, 'big')
-        content += self._sos_info['successive_approx'].to_bytes(1, 'big')
-        length = len(content) + 2
+        sos += self._sos_info['spectral_select'][0].to_bytes(1, 'big')
+        sos += self._sos_info['spectral_select'][1].to_bytes(1, 'big')
+        sos += self._sos_info['successive_approx'].to_bytes(1, 'big')
+        length = len(sos) + 2
 
         return self.Markers["SOS"] + length.to_bytes(2, 'big') + sos
