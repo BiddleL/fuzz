@@ -14,7 +14,7 @@ class JPEG_Mutator(MutatorBase):
         "SOF" : b'\xff[\xc0-\xc3\xc5-\xc7\xc9=\xcb\xcd-\xcf]', # Start of Frame (match statement)
         "DHT" : b'\xff\xc4', # Define Huffman Table
         "DQT" : b'\xff\xdb', # Define Quantization Table
-        "DRI" : b'\xff\xdd', # Define infot art Interval
+        "DRI" : b'\xff\xdd', # Define infotart Interval
         "SOS" : b'\xff\xda', # Start of Scan
         "APP" : b'\xff[\xe0-\xe9\xea-\xef]', # Application specific metadata markers
         "COM" : b'\xff\xfe', # Text Comment
@@ -57,7 +57,6 @@ class JPEG_Mutator(MutatorBase):
         self.frame = dict()
         self.scan = dict()
         self._parse(seed)
-        print(self._sof_info)
 
  
 
@@ -168,6 +167,26 @@ class JPEG_Mutator(MutatorBase):
         qt['table'] = [random.randbytes(8) for _ in range(8)]
         self._q_table.append(qt)
         return self._format()
+        self.q_table.append(qt)
+
+    def _mutate_qt_change(self):
+        """
+        This function mutates the input file by changing a random quantization table
+        with random bytes
+    
+        Args:
+            None
+
+        Returns:
+            None
+        """
+
+        tdx = random.randint(0, len(self._q_table) - 1)
+        rdx = random.randint(0, 7)
+        cdx = random.randint(0, 7)
+
+        row = self._q_table[tdx]['table'][rdx]
+        self._q_table[tdx]['table'][rdx] = row[:cdx] + random.randbytes(1) + row[cdx + 1:]
 
     def _mutate_qt_random(self):
         """
@@ -289,7 +308,7 @@ class JPEG_Mutator(MutatorBase):
                 content = head[high + 2:high + 2 + length]
             
             if re.match(self.Markers["SOF"], field):
-                self._sof_info = self._parse_sof(content, field[1])
+                self._sof_info = self.parse_sof(content, field[1])
             elif re.match(self.Markers["APP"], field):
                 index = int.from_bytes(field, 'big') - 0xffe0
                 self._app_meta[index] = content
@@ -556,7 +575,7 @@ class JPEG_Mutator(MutatorBase):
         sos = bytes()
         sos += self._sos_info['n_components'].to_bytes(1, 'big')
 
-        for idx, _ in enumerate(self._sos_info['components']):
+        for idx in range(self._sos_info['n_components']):
             component = self._sos_info['components'][idx]
             comp = bytes()
             comp += component['id'].to_bytes(1, 'big')

@@ -25,7 +25,6 @@ def isCSV(input_raw: bytes) -> bool:
     except:  
         return False
 
-
     return True
 
 def isJSON(input_raw: bytes) -> bool:
@@ -57,6 +56,18 @@ def isPDF(input_raw: bytes) -> bool:
     if input_raw.startswith("25504446"):
         return True
     return False    
+
+def isJPEG(input_raw: bytes) -> bool:
+    """
+    Determines if the given  bytes represents a valid JPEG file
+    """
+    SOI = b'\xff\xd8'
+    EOI = b'\xff\xd9'
+    if input_raw.startswith(SOI) and input_raw.endswith(EOI):
+        return True
+    
+    return False
+
 # other matchers jpeg, xml, elf, pdf...
 
 def isXML(input_raw: bytes) -> bool:
