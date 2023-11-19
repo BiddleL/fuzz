@@ -9,7 +9,8 @@ class Manager:
 
     _MUTATORS = {
         "csv" : mutators.CSV_Mutator,
-        "json" : mutators.JSON_Mutator
+        "json" : mutators.JSON_Mutator,
+        "pdf" : mutators.PDF_Mutator
     }
     
     def __init__(self, binary, seed, times: int = 5000):
