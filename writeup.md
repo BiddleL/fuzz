@@ -42,8 +42,8 @@ In addition to this, when our fuzzer determines the file type supplied, it will 
 | JSON | Add random amounts of (key: str, value: int) JSON objects to the input<br/>Add random amounts of (key: str, value: str) JSON objects to the input<br/>Mutate random bits in the provided input|
 | Plain text/ELF | Mutating input to be of large lengths to cause overflows<br/>The above inputs consist of chars, nulls, newlines, etc.<br/>Adding large positive and negative numbers to cause int overflow/underflow<br/>Format specifiers added to generated input |
 | XML | Mutating the XML tag value<br/>Mutating attributes of XML elements<br/>Adding excessive ammounts of tags to invoke an overflow |
-| JPEG |  Adding a new quantization table with random bytes</br>hanging a random quantization table with random bytes</br>Changing a huffman table with random bytes</br>Changing the frame's height and weight to random bytes</br>Flipping the body of the image</br>|
-| PDF | [Mutations here] |
+| JPEG |  Adding a new quantization table with random bytes</br>Changing a random quantization table with random bytes</br>Changing a huffman table with random bytes</br>Changing the frame's height and weight to random bytes</br>Flipping the body of the image</br>|
+| PDF | Adding PDF specific special chars '%, (), <>, '</br>Removing the EOF</br>Altering the version of pdf being read |
 
 ## Harness
 The harness begins by initialising the process. Following this, it receives the binary and sample input file and determines the file type using a combination of the header, file content and structures. With the knowledge of the file type, it calls the specific file type mutator to generate inputs to begin the process of fuzzing the binary.
