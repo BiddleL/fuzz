@@ -1,6 +1,6 @@
 # COMP6447 Major Project
 ## Group Members
-- Daniel Blazevski
+- Daniel Blazevski (z5208599)
 - Liam Biddle (z5311885)
 - Ziqi Guo (z5179887)
 - Shafi Rafiq (z5258434)
