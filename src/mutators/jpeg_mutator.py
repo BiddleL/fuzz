@@ -100,7 +100,7 @@ class JPEG_Mutator(MutatorBase):
         qt['id'] = tdx + 1
         qt['table'] = [random.randbytes(8) for _ in range(8)]
         
-        self._q_table[tdx](qt)
+        self._q_table[tdx] = qt
 
     def _mutate_hf(self):
         """
