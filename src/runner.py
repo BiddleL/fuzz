@@ -9,15 +9,20 @@ class Manager:
 
     _MUTATORS = {
         "csv" : mutators.CSV_Mutator,
-        "json" : mutators.JSON_Mutator
+        "json" : mutators.JSON_Mutator,
+        "plaintext": mutators.PLAINTEXT_Mutator,
+        "xml": mutators.XML_Mutator
     }
     
     def __init__(self, binary, seed, times: int = 5000):
         self._num_runs = times
         self._current_checkpoint = 0
         
-        self._process_name = self._format_binary_path(binary)
-
+        if "./"  != binary[1:2]:
+            self._process_name = f"./{binary}"
+        else:
+            self._process_name = f"{binary}"
+        
         self._stop_flag = False
         
         try:
@@ -31,6 +36,7 @@ class Manager:
         self._file_type = process.whichType(self._input_file)
         self._fuzz = self._MUTATORS[self._file_type](self._input_file)
         self._init_process()
+
 
     def _format_binary_path(self, binary: str) -> str:
         """Ensure the binary path is correctly formatted."""
@@ -83,15 +89,16 @@ class Manager:
                 if exitcode < 0:  # Handle SIGFAULT
                     print(f"Program Crashed: exitcode = {exitcode}")
                     print(f"\tReason: {process.ExitCodes(-exitcode).name}")
-                    print(f"Dumped bad input report to {self._txt_name}_dump.txt")
+
+                    print(f"Dumped badinput to {self._txt_name}_dump.txt")
+
                     self._result_dump(input_bytes)
                     break
             except subprocess.TimeoutExpired:
                 print(f"{idx}: Timeout")
                 print(f"Dumped timeout report to {self._txt_name}_dump.txt")
                 self._result_dump(input_bytes)
-                break
-            
+                break        
             self._reset()
         
 
