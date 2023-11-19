@@ -14,11 +14,25 @@ class JPEG_Mutator(MutatorBase):
         "SOF" : b'\xff[\xc0-\xc3\xc5-\xc7\xc9=\xcb\xcd-\xcf]', # Start of Frame (match statement)
         "DHT" : b'\xff\xc4', # Define Huffman Table
         "DQT" : b'\xff\xdb', # Define Quantization Table
-        "DRI" : b'\xff\xdd', # Define infotart Interval
+        "DRI" : b'\xff\xdd', # Define infot art Interval
         "SOS" : b'\xff\xda', # Start of Scan
         "APP" : b'\xff[\xe0-\xe9\xea-\xef]', # Application specific metadata markers
         "COM" : b'\xff\xfe', # Text Comment
         "EOI" : b'\xff\xd9', # End of Image
+    }
+
+
+    Magic = {
+        "TXT" : b"",                                                 
+        "JPEG" : b"\xff\xd8\xff\xe0\x00\x10\x4a\x46\x49\x46\x00\x01", 
+        "GIF" : b"\x47\x49\x46\x38\x37\x61",                        
+        "AIIF" : b"\x46\x4F\x52\x4d\xde\xad\xbe\xef\x41\x49\x46\x46", 
+        "PDF" : b"\x25\x50\x44\x46\x2d",                          
+        "MP3" : b"\x52\x49\x46\x46\xde\xad\xbe\xef\x57\x41\x56\x45", 
+        "ZIP" : b"\x50\x4b\x03\x04",        
+        "WAV": b"\xff\xfb",    
+        "PNG" : b"\x89\x50\x4e\x47\x0d\x0a\x1a\x0a",             
+        "ELF" : b"\x7f\x45\x4c\x46",                                                     
     }
 
     def __init__(self, seed: bytes):
@@ -42,8 +56,10 @@ class JPEG_Mutator(MutatorBase):
         self.frame = dict()
         self.scan = dict()
         self._parse(seed)
+ 
 
-    def format_output(self, mutable_content: bytes) -> bytes:
+
+    def format_output(self, mutated_content: bytes ) -> bytes:
         """
         Construct a JPEG file
     
@@ -55,7 +71,10 @@ class JPEG_Mutator(MutatorBase):
         Returns:
             bytes: A formatted JPEG in byte form.
         """
-        
+        self._parse(self._seed)
+        return mutated_content
+
+    def _format(self) -> bytes:
         head = self._asm_app()
         head += self._asm_qt()
         head += self._asm_sof()
@@ -67,6 +86,73 @@ class JPEG_Mutator(MutatorBase):
         ret =  self.Markers["SOI"] + head + self._body + self.Markers["EOI"]
         return ret
 
+    def _mutate_help(self):
+        index = self._seed.find(b'\xff\xc4')
+        
+        return self._seed[:index] + b'\xff\xc0\x00\x11\x08\x01\xd6\x01\x84' + b'\x03' + b'\xde\x23' + self._seed[index + 12:]
+
+    def _mutate_swap_markers(self):
+        markers = list(self.Markers.values())
+        swapped = markers[random.randrange(0, len(self.Markers))]
+        new = markers[random.randrange(0, len(self.Markers))]
+        return self._seed.replace(swapped, new)
+
+    def _mutate_remove_markers(self):
+        markers = list(self.Markers.values())
+        location = markers[random.randrange(0, len(self.Markers))]
+        return self._seed.replace(location, b'')
+
+    def _mutate_change_magic(self):
+        magic = list(self.Magic.values())
+        new = magic[random.randrange(0, len(self.Magic))]
+        return new + self._seed[12:]
+
+    def _mutate_insert_false_marker(self):
+        idx = random.randrange(12, len(self._seed))
+        return self._seed[:idx] + b'\xff' + self._seed[idx:]
+
+    def _mutate_reverse(self):
+        location = random.randrange(len(self._seed))
+        size = random.randrange(len(self._seed) - location)
+        new_seed = self._seed[:location] 
+        new_seed += self._seed[location : location + size:-1]
+        new_seed += self._seed[location + size:]
+        return new_seed
+
+    def _mutate_insert_random_bytes(self):
+        ran = random.randbytes(2)
+        loc = random.randrange(12, len(self._seed))
+        return self._seed[:loc] + ran + self._seed[loc:]
+
+    def _mutate_remove_random_bytes(self):
+        loc = random.randbytes(1)
+        return self._seed.replace(loc, b'')
+
+    def _mutate_just_magic(self):
+        return self.Magic["JPEG"] + self.Markers["EOI"]
+
+    def _mutate_eoi_before(self):
+        return self.Markers["EOI"] + self._seed
+
+    def _mutate_swap_magic(self):
+        return self.Markers["EOI"] + self._seed[12:4] + self.Magic["JPEG"]
+
+    def _mutate_len_hf(self):
+        index = self._seed.find(b'\xff\xc4')
+
+        return self._seed[:index + 2] + b'\x00\xee' + self._seed[index + 4:]
+
+    def _mutate_remove_end(self):
+        return self._seed.replace(self.Markers["EOI"], b'')
+
+    def _mutate_remove_start(self):
+        return self._seed.replace(self.Magic["JPEG"], b'')
+
+    def _mutate_remove_magic(self):
+        new = self._seed.replace(self.Magic["JPEG"], b'')
+        new =  new.replace(self.Markers["EOI"], b'')
+        return new
+    
     def _mutate_qt_new(self):
         """
         This function mutates the input file by adding a quantization table
@@ -82,7 +168,8 @@ class JPEG_Mutator(MutatorBase):
         qt = dict()
         qt['id'] = len(self._q_table) + 1
         qt['table'] = [random.randbytes(8) for _ in range(8)]
-        self.q_table.append(qt)
+        self._q_table.append(qt)
+        return self._format()
 
     def _mutate_qt_random(self):
         """
@@ -95,12 +182,13 @@ class JPEG_Mutator(MutatorBase):
         Returns:
             None
         """
-        tdx = random.randint(0, len(self._q_table) - 1)
+        tdx = random.randint(0, random.randint(0,len(self._q_table)-1))
         qt = dict()
         qt['id'] = tdx + 1
         qt['table'] = [random.randbytes(8) for _ in range(8)]
         
         self._q_table[tdx] = qt
+        return self._format()
 
     def _mutate_hf(self):
         """
@@ -126,6 +214,7 @@ class JPEG_Mutator(MutatorBase):
         
         new_ht['encodings'] = encodings
         self._hf_table[tdx] = new_ht
+        return self._format()
 
     def _mutate_sof(self):
         """
@@ -141,6 +230,7 @@ class JPEG_Mutator(MutatorBase):
         
         self._sof_info['height'] = random.randint(0, 0xFFFF)
         self._sof_info['width'] = random.randint(0, 0xFFFF)
+        return self._format()
     
     def _mutate_body(self):
         """
@@ -156,9 +246,10 @@ class JPEG_Mutator(MutatorBase):
         data = bits.bits(self._body)
         new_body = list()
         d_length = len(data)
-        for _, bdx in data:
-            new_body.append(data[d_length - bdx])
+        for bdx, _ in enumerate(data):
+            new_body.append(data[d_length - bdx -1])
         self._body = bits.unbits(new_body)
+        return self._format()
 
     def _parse(self, sample: bytes):
         """
@@ -227,6 +318,8 @@ class JPEG_Mutator(MutatorBase):
         info['height'] = int.from_bytes(content[1:3], 'big')
         info['width'] = int.from_bytes(content[3:5], 'big')
         
+        return info
+
     def _parse_sof_components(self, content: bytes) -> list:
         """
         Parses a content of frame's components from a JPEG file into the class' structure
@@ -277,7 +370,7 @@ class JPEG_Mutator(MutatorBase):
                 hi += idx
                 encode.append(encodings[lo:hi])
                 lo = hi
-        hf["encodings"] = encodings
+        hf["encodings"] = encode
         return hf
     
     def _parse_sos(self, content: bytes) -> dict:
@@ -331,7 +424,7 @@ class JPEG_Mutator(MutatorBase):
         """
         
         content = bytes()
-        for k, v in self.app_meta.items():
+        for k, v in self._app_meta.items():
             marker = k + 0xffe0
             marker = marker.to_bytes(2, 'big')
             content_len = len(v) + 2
@@ -353,7 +446,12 @@ class JPEG_Mutator(MutatorBase):
         content = bytes()
         for tbl in self._q_table:
             table = bytes()
-            table += tbl['id'].to_bytes(1, 'big')
+            try:
+
+                table += tbl['id'].to_bytes(1, 'big')
+            except: 
+                r = random.randint(0, 254)
+                table += r.to_bytes(1, 'big')
             table += b''.join(tbl['table'])
             length = len(table) + 2
             content +=  self.Markers["DQT"] + length.to_bytes(2, 'big') + table
@@ -402,9 +500,9 @@ class JPEG_Mutator(MutatorBase):
             cBytes += ((comp['scale'][1] << 4) + comp['scale'][0]).to_bytes(1, 'big')
             cBytes += comp['dqt_index'].to_bytes(1, 'big')
             comps += cBytes
-        return comp
+        return comps
     
-    def _asm_hf(self) -> bytes:
+    def _asm_ht(self) -> bytes:
         """
         Assembles class structure's huffman table 
         into a bytes stream
@@ -429,6 +527,7 @@ class JPEG_Mutator(MutatorBase):
             table += size + encode
             length = len(table) + 2
             content +=  self.Markers["DHT"] + length.to_bytes(2, 'big') + table
+        return content
 
     def _asm_sos(self) -> bytes:
         """
@@ -453,15 +552,9 @@ class JPEG_Mutator(MutatorBase):
             
             sos += comp
 
-        content += self._sos_info['spectral_select'][0].to_bytes(1, 'big')
-        content += self._sos_info['spectral_select'][1].to_bytes(1, 'big')
-        content += self._sos_info['successive_approx'].to_bytes(1, 'big')
-        length = len(content) + 2
+        sos += self._sos_info['spectral_select'][0].to_bytes(1, 'big')
+        sos += self._sos_info['spectral_select'][1].to_bytes(1, 'big')
+        sos += self._sos_info['successive_approx'].to_bytes(1, 'big')
+        length = len(sos) + 2
 
         return self.Markers["SOS"] + length.to_bytes(2, 'big') + sos
-
-
-
-
-
-        
