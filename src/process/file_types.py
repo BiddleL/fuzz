@@ -52,6 +52,11 @@ def isJPEG(input_raw: bytes) -> bool:
     
     return False
 
+
+def isPDF(input_raw: bytes) -> bool:
+    if input_raw.startswith("25504446"):
+        return True
+    return False    
 # other matchers jpeg, xml, elf, pdf...
 
 def isXML(input_raw: bytes) -> bool:
@@ -85,7 +90,7 @@ def whichType(input):
         yield ("jpeg", isJPEG)
         # yield ("xml", xml_checker)
         # yield ("elf", elf_checker)
-        # yield ("pdf", pdf_checker)
+        yield ("pdf", isPDF)
         
     # default value set to 'plaintext' because all seeds end with '.txt'
     return next((filetype for filetype, matcher in checkers() if matcher(input)), 'plaintext')

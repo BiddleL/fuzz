@@ -12,7 +12,8 @@ class Manager:
         "json" : mutators.JSON_Mutator,
         "plaintext": mutators.PLAINTEXT_Mutator,
         "xml": mutators.XML_Mutator,
-        "jpeg" : mutators.JPEG_Mutator
+        "jpeg" : mutators.JPEG_Mutator,
+        "pdf" : mutators.PDF_Mutator
     }
     
     def __init__(self, binary, seed, times: int = 5000):
