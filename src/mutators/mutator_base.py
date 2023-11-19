@@ -1,6 +1,5 @@
 import random
-import pwnlib.util.fiddling as bits
-from typing import Tuple, Optional
+from typing import Optional
 
 class MutatorBase:
     """
